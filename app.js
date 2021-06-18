@@ -18,12 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const isChecked = e.target.checked;
     const lis = ul.children;
     if(isChecked) {
-      for (let i = 0; i < lis.length; i += 1) {
+      for (let i = 0; i < lis.length; i++ ) {
         let li = lis[i];
         if (li.className === 'responded') {
-          li.style.display = 'none';
-        } else {
           li.style.display = '';
+        } else {
+          li.style.display = 'none';
         }
       }
     } else {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function createLI(text) {
     function createElement(elementName, property, value) {
       const element = document.createElement(elementName);
-      element[property] = elementName;
+      element[property] = value;
       return element;
     }
 
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     appendToLI('span', 'textContent', text);
     appendToLI('label', 'textContent', 'Confirmed')
       .appendChild(createElement('input', 'type', 'checkbox'));
-    appendToLI('button', 'textContent', text);
+    appendToLI('button', 'textContent', 'edit');
     appendToLI('button', 'textContent', 'remove');
     return li;
   }
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ul.appendChild(li);
   });
 
-  ul.addEventListener('change', (event) => {
+  ul.addEventListener('change', (e) => {
     const checkbox = e.target;
     const listItem = checkbox.parentNode.parentNode;
     const checked = checkbox.checked;
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const action = button.textContent;
       const nameActions = {
         remove: () => {
-          li.removeChild(button);
+          ul.removeChild(li);
         },
         edit: () => {
           const span = li.firstElementChild;
@@ -95,13 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
           li.removeChild(span);
           button.textContent = 'save';   
         },
-        sav: () => {
+        save: () => {
           const input = li.firstElementChild;
           const span = document.createElement('span');
           span.textContent = input.value;
           li.insertBefore(span, input);
           li.removeChild(input);
-          button.textContent = '';        
+          button.textContent = 'edit';        
         }
       };
 
