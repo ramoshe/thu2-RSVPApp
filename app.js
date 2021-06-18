@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('registrar');
   const input = form.querySelector('input');
-  
+
   const mainDiv = document.querySelector('.main');
   const ul = document.getElementById('invitedList');
-  
+
   const div = document.createElement('div');
   const filterLabel = document.createElement('label');
   const filterCheckBox = document.createElement('input');
-  
+
   filterLabel.textContent = "Hide those who haven't responded";
   filterCheckBox.type = 'checkbox';
   div.appendChild(filterLabel);
@@ -18,44 +18,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const isChecked = e.target.checked;
     const lis = ul.children;
     if(isChecked) {
-      for (let i = 0; i < lis.length; i += 1) {
+      for (let i = 0; i < lis.length; i++ ) {
         let li = lis[i];
         if (li.className === 'responded') {
-          li.style.display = '';  
+          li.style.display = '';
         } else {
-          li.style.display = 'none';                        
+          li.style.display = 'none';
         }
       }
     } else {
       for (let i = 0; i < lis.length; i += 1) {
         let li = lis[i];
         li.style.display = '';
-      }                                 
+      }
     }
   });
-  
+
   function createLI(text) {
     function createElement(elementName, property, value) {
-      const element = document.createElement(elementName);  
-      element[property] = value; 
+      const element = document.createElement(elementName);
+      element[property] = value;
       return element;
     }
-    
+
     function appendToLI(elementName, property, value) {
-      const element = createElement(elementName, property, value);     
-      li.appendChild(element); 
+      const element = createElement(elementName, property, value);
+      li.appendChild(element);
       return element;
     }
-    
+
     const li = document.createElement('li');
-    appendToLI('span', 'textContent', text);     
+    appendToLI('span', 'textContent', text);
     appendToLI('label', 'textContent', 'Confirmed')
       .appendChild(createElement('input', 'type', 'checkbox'));
     appendToLI('button', 'textContent', 'edit');
     appendToLI('button', 'textContent', 'remove');
     return li;
   }
-  
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = input.value;
@@ -63,19 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const li = createLI(text);
     ul.appendChild(li);
   });
-    
+
   ul.addEventListener('change', (e) => {
-    const checkbox = event.target;
-    const checked = checkbox.checked;
+    const checkbox = e.target;
     const listItem = checkbox.parentNode.parentNode;
-    
+    const checked = checkbox.checked;
+
     if (checked) {
       listItem.className = 'responded';
     } else {
       listItem.className = '';
     }
   });
-    
+
   ul.addEventListener('click', (e) => {
     if (e.target.tagName === 'BUTTON') {
       const button = e.target;
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
           input.value = span.textContent;
           li.insertBefore(input, span);
           li.removeChild(span);
-          button.textContent = 'save';  
+          button.textContent = 'save';   
         },
         save: () => {
           const input = li.firstElementChild;
@@ -104,18 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
           button.textContent = 'edit';        
         }
       };
-      
+
       // select and run action in button's name
       nameActions[action]();
     }
-  });  
-});  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  });
+});
