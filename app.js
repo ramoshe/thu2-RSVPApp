@@ -4,10 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const mainDiv = document.querySelector('.main');
   const ul = document.getElementById('invitedList');
-
+  
   const div = document.createElement('div');
   const filterLabel = document.createElement('label');
   const filterCheckBox = document.createElement('input');
+
+  //LocalStorage - load and save
+  if (localStorage.length > 0) {
+    ul.innerHTML = localStorage.getItem('savedList')
+  }
+  function saveToLocalStorage() {
+    localStorage.setItem('savedList', ul.innerHTML);
+    console.log(localStorage);
+  };
   
   //add the filter for respondents to the page
   filterLabel.textContent = "Hide those who haven't responded";
@@ -18,30 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
   
   //handler for filter
   filterCheckBox.addEventListener('change', (e) => {
-    const isChecked = e.target.checked;
-    const lis = ul.children;
-    if(isChecked) {
-      for (let i = 0; i < lis.length; i += 1) {
-        let li = lis[i];
-        if (li.className === 'responded') {
-          li.style.display = ''; 
-        } else {
-          li.style.display = 'none'; 
-        }
-        let label = lis[i].querySelector('label');
+    const list = Array.from(ul.children);
+    if(e.target.checked) {
+      list.forEach(li => {
+        (li.className === 'responded') ? (li.style.display = '') : (li.style.display = 'none');
+        let label = li.querySelector('label');
         label.style.display = 'none';
-      }
+      });
     } else {
-      for (let i = 0; i < lis.length; i += 1) {
-        let li = lis[i];
+      list.forEach(li => {
         li.style.display = '';
-        let label = lis[i].querySelector('label');
+        let label = li.querySelector('label');
         label.style.display = '';
-      }                                 
+      });                                
     }
   });
   
-  //function that tufns form input into an atendee card (list item)
+  //function that turns form input into an atendee card (list item)
   function createLI(text) {
     function createElement(elementName, property, value) {
       const element = document.createElement(elementName);  
@@ -67,22 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
       .appendChild(createElement('input', 'type', 'checkbox'));
 
     //add a select for not attending
-    // const notAttending = document.createElement('select');
-    // notAttending.name = 'notAttending';
-    // li.appendChild(notAttending);
-    // const option1 = document.createElement('option');
-    // option1.textContent = 'Attending?';
-    // option1.value = 'maybe';
-    // notAttending.appendChild(option1);
-    // const option2 = document.createElement('option');
-    // option2.textContent = 'Not Attending';
-    // option2.value = 'no';
-    // notAttending.appendChild(option2);
-    // li.appendChild(createElement('br'));
+    li.appendChild(createElement('br'));
+    const notAttending = document.createElement('select');
+      notAttending.name = 'notAttending';
+      li.appendChild(notAttending);
+    const option1 = document.createElement('option');
+      option1.textContent = 'Attending?';
+      option1.value = 'maybe';
+      notAttending.appendChild(option1);
+    const option2 = document.createElement('option');
+      option2.textContent = 'Not Attending';
+      option2.value = 'no';
+      notAttending.appendChild(option2);
+    li.appendChild(createElement('br'));
 
     appendToLI('button', 'textContent', 'edit');
     appendToLI('button', 'textContent', 'remove');
-    
+        
     return li;
   }
   
@@ -91,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const text = input.value;
     
-    if (text == '') {
+    if (text === '') {
       alert('Please enter the name of the invitee');
     } else {
       input.value = '';
@@ -99,46 +102,59 @@ document.addEventListener('DOMContentLoaded', () => {
       ul.appendChild(li);
 
       //reject if name is already on list
-      const list = ul.children;
       const names = [];
+      const list = Array.from(ul.children);
       for (let i=0; i<list.length; i++) {
         names[i] = list[i].firstElementChild.textContent;
       }
+
       for (let i=0; i<list.length-1; i++) {
-        if (names[i] == text) {
+        if (names[i] === text) {
           alert(`${text} is already on the list`);
           ul.removeChild(li);
         }
       } 
     }
+    saveToLocalStorage();
   });
 
-  //event handler for confirmed checkbox and attending select on invitee card (list item)
+  //event handler for confirmed checkbox on invitee card (list item)
   ul.addEventListener('change', (e) => {
     if (e.target.tagName === 'INPUT') {
       const checkbox = e.target;
-      const checked = checkbox.checked;
       const listItem = checkbox.parentNode.parentNode;
       
-      if (checked) {
+      if (checkbox.checked) {
         listItem.className = 'responded';
         checkbox.previousSibling.textContent = 'Confirmed';
+        checkbox.setAttribute('checked', '');
       } else {
         listItem.className = '';
         checkbox.previousSibling.textContent = 'Confirm';
+        checkbox.removeAttribute('checked');
       }
     }
-    // if (e.target.tagName === 'SELECT') {
-    //   const select = e.target;
-    //   const listItem = select.parentNode;
-    //   if (select.value = 'no') {
-    //     listItem.style.backgroundColor = 'lightgray';
-    //     console.log(select.value);
-    //   }
-    //   if (select.value = 'maybe') {
-    //     listItem.backgroundColor = 'white';
-    //   }
-    // }
+
+  //event handler for submit select on invitee card (list item)  
+    if (e.target.tagName === 'SELECT') {
+      const select = e.target;
+      const listItem = select.parentNode;
+
+      console.log(select.firstElementChild);
+      console.log(select.lastElementChild);
+
+      if (select.value === 'no') {
+        listItem.style.backgroundColor = 'gainsboro';
+        select.firstElementChild.removeAttribute('selected', '');
+        select.lastElementChild.setAttribute('selected', '');
+      }
+      if (select.value === 'maybe') {
+        listItem.style.backgroundColor = 'white';
+        select.firstElementChild.setAttribute('selected', '');
+        select.lastElementChild.removeAttribute('selected', '');
+      }
+    }
+    saveToLocalStorage();
   });
 
   //event handler for the other buttons on the invitee card (list item)
@@ -188,16 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       // select and run action in button's name
       nameActions[action]();
+      saveToLocalStorage();
     }
   });
 });
- 
-  
-  
-  
-  
-  
-  
-  
-  
-  
