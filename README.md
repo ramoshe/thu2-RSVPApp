@@ -1,4 +1,4 @@
-# FJFS Unit 2 Project: RSVP App
+# FJFS Unit 2: RSVP App
 
 A project created during the lessons of Unit 2 (not the final Unit 2 project) of the Full Stack JavaScript Techdegree program from Treehouse. An app to manage responses to invitations to an event.
 
